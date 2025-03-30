@@ -2,28 +2,45 @@ package com.example.authy.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
+/**
+ * DTO representing the response for authentication requests.
+ * This includes access and refresh tokens, MFA (Multi-Factor Authentication) status, and optional secret image URI.
+ */
+@Getter
+@JsonInclude(JsonInclude.Include.NON_EMPTY) // Excludes null or empty fields from JSON response
 public class AuthenticationResponse {
 
-    @JsonProperty("access_token")
-    private String accessToken;
+    @JsonProperty("access_token") // Maps JSON property to Java field
+    private final String accessToken;
 
-    @JsonProperty("refresh_token")
-    private String refreshToken;
+    @JsonProperty("refresh_token") // Maps JSON property to Java field
+    private final String refreshToken;
 
-    private boolean mfaEnabled;
+    private final boolean mfaEnabled; // Indicates if Multi-Factor Authentication is enabled
 
-    private String secretImageUri;
+    private final String secretImageUri; // Optional: URI for MFA QR code image
 
+    /**
+     * Constructor for authentication response without a secret image URI.
+     *
+     * @param accessToken  The JWT access token.
+     * @param refreshToken The refresh token.
+     * @param mfaEnabled   Whether MFA is enabled.
+     */
     public AuthenticationResponse(String accessToken, String refreshToken, boolean mfaEnabled) {
-        this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
-        this.mfaEnabled = mfaEnabled;
+        this(accessToken, refreshToken, mfaEnabled, null);
     }
 
+    /**
+     * Constructor for authentication response with a secret image URI.
+     *
+     * @param accessToken    The JWT access token.
+     * @param refreshToken   The refresh token.
+     * @param mfaEnabled     Whether MFA is enabled.
+     * @param secretImageUri The URI for the MFA QR code image.
+     */
     public AuthenticationResponse(String accessToken, String refreshToken, boolean mfaEnabled, String secretImageUri) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;

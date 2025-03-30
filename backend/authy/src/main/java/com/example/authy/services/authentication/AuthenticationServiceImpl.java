@@ -24,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +37,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final TwoFactorAuthenticationService twoFactorAuthenticationService;
     private final AuthenticationManager authenticationManager;
 
+    /**
+     * Registers a new user with optional Multi-Factor Authentication (MFA).
+     *
+     * @param request User registration details
+     * @return AuthenticationResponse containing tokens and MFA details
+     */
+    @Override
     public AuthenticationResponse register(UserDTO request) {
         User user = new User();
         user.setFirstName(request.getFirstName());
@@ -43,12 +51,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setMfaEnabled(request.isMfaEnabled());
-
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-
         user.setRole(request.getRole());
 
-
+        // Generate MFA secret if MFA is enabled
         if (request.isMfaEnabled()) {
             user.setSecret(twoFactorAuthenticationService.generateNewSecret());
         }
@@ -60,22 +66,32 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         saveUserToken(token, user);
 
-        return new AuthenticationResponse(token, refreshToken, user.isMfaEnabled(), twoFactorAuthenticationService.generateQRCode(user.getSecret()));
+        return new AuthenticationResponse(
+                token,
+                refreshToken,
+                user.isMfaEnabled(),
+                user.isMfaEnabled() ? twoFactorAuthenticationService.generateQRCode(user.getSecret()) : null
+        );
     }
 
+    /**
+     * Authenticates a user and issues JWT tokens.
+     *
+     * @param request User authentication details (username, password)
+     * @return AuthenticationResponse with access and refresh tokens, or MFA prompt
+     */
+    @Override
     public AuthenticationResponse authenticate(UserDTO request) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword())
+                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
 
-        User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
+        User user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + request.getUsername()));
 
+        // If MFA is enabled, require verification
         if (user.isMfaEnabled()) {
-            return new AuthenticationResponse(null,
-                    null,
-                    true);
+            return new AuthenticationResponse(null, null, true);
         }
 
         String token = jwtService.generateToken(user);
@@ -84,54 +100,72 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         revokeAllUserTokens(user);
         saveUserToken(token, user);
 
-        return new AuthenticationResponse(token, refreshToken, user.isMfaEnabled());
+        return new AuthenticationResponse(token, refreshToken, false);
     }
 
-    public ResponseEntity refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    /**
+     * Refreshes authentication token if the provided refresh token is valid.
+     *
+     * @param request  HTTP request containing refresh token
+     * @param response HTTP response
+     * @return ResponseEntity with new authentication token or unauthorized status
+     * @throws IOException If an error occurs during response handling
+     */
+    @Override
+    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        String token = authHeader.substring(7);
-        String username = jwtService.getUsernameFromToken(token);
+        String refreshToken = authHeader.substring(7);
+        String username = jwtService.getUsernameFromToken(refreshToken);
 
-        if (username != null) {
-            var user = userRepository.findByUsername(username)
-                    .orElseThrow();
-            if (jwtService.isValidRefreshToken(token, user)) {
-                String accessToken = jwtService.generateToken(user);
-//                String refreshToken = jwtService.generateRefreshToken(user);
+        Optional<User> optionalUser = userRepository.findByUsername(username);
 
-                revokeAllUserTokens(user);
-                saveUserToken(accessToken, user);
-                return new ResponseEntity(new AuthenticationResponse(accessToken, token, user.isMfaEnabled()), HttpStatus.OK);
-//                var authResponse = new AuthenticationResponse(accessToken, refreshToken);
-//                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
-//                response.setStatus(HttpServletResponse.SC_OK);
-            }
+        if (optionalUser.isPresent() && jwtService.isValidRefreshToken(refreshToken, optionalUser.get())) {
+            User user = optionalUser.get();
+            String newAccessToken = jwtService.generateToken(user);
+
+            revokeAllUserTokens(user);
+            saveUserToken(newAccessToken, user);
+
+            return ResponseEntity.ok(new AuthenticationResponse(newAccessToken, refreshToken, user.isMfaEnabled()));
         }
-        return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
+    /**
+     * Verifies the user's Multi-Factor Authentication (MFA) code.
+     *
+     * @param verificationRequest Verification details (username, OTP code)
+     * @return AuthenticationResponse containing access token if successful
+     */
     @Override
     public AuthenticationResponse verifyCode(VerificationRequest verificationRequest) {
-        User user = userRepository.findByUsername(verificationRequest.getUsername()).orElseThrow(
-                () -> new EntityNotFoundException(
-                        String.format("User with username %s not found", verificationRequest.getUsername())
-                )
-        );
-        if (twoFactorAuthenticationService.isOtpNotValid(user.getSecret(), verificationRequest.getCode())) {
-            throw new BadCredentialsException("Code is not correct!");
+        User user = userRepository.findByUsername(verificationRequest.getUsername())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "User not found with username: " + verificationRequest.getUsername()));
+
+        if (!twoFactorAuthenticationService.isOtpValid(user.getSecret(), verificationRequest.getCode())) {
+            throw new BadCredentialsException("Invalid verification code.");
         }
 
-        var token = jwtService.generateToken(user);
+        String token = jwtService.generateToken(user);
+
         revokeAllUserTokens(user);
         saveUserToken(token, user);
 
-        return new AuthenticationResponse(token, null, user.isMfaEnabled());
+        return new AuthenticationResponse(token, null, false);
     }
 
+    /**
+     * Revokes all valid tokens associated with a given user.
+     *
+     * @param user The user whose tokens should be revoked
+     */
     private void revokeAllUserTokens(User user) {
         var validUserTokens = tokenRepository.findAllValidTokensByUser(user.getId());
         if (validUserTokens.isEmpty()) return;
@@ -139,13 +173,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         validUserTokens.forEach(token -> {
             token.setExpired(true);
             token.setRevoked(true);
-            tokenRepository.save(token);
         });
+
+        tokenRepository.saveAll(validUserTokens);
     }
 
+    /**
+     * Stores a newly generated token for a user.
+     *
+     * @param token JWT token to store
+     * @param user  User associated with the token
+     */
     private void saveUserToken(String token, User user) {
         Token tokenEntity = new Token();
-
         tokenEntity.setToken(token);
         tokenEntity.setUser(user);
         tokenEntity.setTokenType(TokenType.BEARER);
