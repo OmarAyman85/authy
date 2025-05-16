@@ -1,0 +1,148 @@
+<div [formGroup]="fullNameForm" class="flex space-x-6 mb-5">
+  <!-- First Name Input -->
+  <div class="flex-1">
+    <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">
+      First Name
+      <span class="text-red-600"> *</span>
+    </label>
+    <div class="relative">
+      <div
+        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+      >
+        <svg
+          class="w-6 h-6 text-gray-800 dark:text-white"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          fill="currentColor"
+          class="size-6 text-gray-500"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 6h8m-8 4h12M6 14h8m-8 4h12"
+          />
+        </svg>
+      </div>
+      <input
+        id="firstName"
+        name="firstName"
+        type="text"
+        autocomplete="firstName"
+        formControlName="firstName"
+        placeholder="First Name"
+        class="block w-full pl-10 pr-3 py-4 bg-gray-200 border border-gray-300 rounded-full shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+      />
+    </div>
+    <!-- First Name Validation -->
+    @if (fullNameForm.controls['firstName'].touched) {
+    @if(fullNameForm.controls['firstName'].errors?.['required']) {
+    <div class="mt-2 ml-5">
+      <span class="text-red-600">This is required</span>
+    </div>
+    } @if(fullNameForm.controls['firstName'].errors?.['pattern']) {
+    <div class="mt-2 ml-5">
+      <span class="text-red-600">This is wrong format</span>
+    </div>
+    } }
+  </div>
+
+  <!-- Middle Name Input -->
+  <div class="flex-1">
+    <label
+      for="middleName"
+      class="block text-sm font-medium text-gray-700 mb-1"
+    >
+      Middle Name
+    </label>
+    <div class="relative">
+      <div
+        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+      >
+        <svg
+          class="w-6 h-6 text-gray-800 dark:text-white"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          fill="currentColor"
+          class="size-6 text-gray-500"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M8 6h8M6 10h12M8 14h8M6 18h12"
+          />
+        </svg>
+      </div>
+      <input
+        id="middleName"
+        name="middleName"
+        type="text"
+        autocomplete="middleName"
+        formControlName="middleName"
+        placeholder="Middle Name"
+        class="block w-full pl-10 pr-3 py-4 bg-gray-200 border border-gray-300 rounded-full shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+      />
+    </div>
+  </div>
+
+  <!-- Last Name Input -->
+  <div class="flex-1">
+    <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1">
+      Last Name
+      <span class="text-red-600"> *</span>
+    </label>
+    <div class="relative">
+      <div
+        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+      >
+        <svg
+          class="w-6 h-6 text-gray-800 dark:text-white"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          fill="currentColor"
+          class="size-6 text-gray-500"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M18 6h-8m8 4H6m12 4h-8m8 4H6"
+          />
+        </svg>
+      </div>
+      <input
+        id="lastName"
+        name="lastName"
+        type="text"
+        autocomplete="lastName"
+        formControlName="lastName"
+        placeholder="Last Name"
+        class="block w-full pl-10 pr-3 py-4 bg-gray-200 border border-gray-300 rounded-full shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+      />
+    </div>
+    <!-- Last Name Validation -->
+    @if (fullNameForm.controls['lastName'].touched) {
+    @if(fullNameForm.controls['lastName'].errors?.['required']) {
+    <div class="mt-2 ml-5">
+      <span class="text-red-600">This is required</span>
+    </div>
+    } @if(fullNameForm.controls['lastName'].errors?.['pattern']) {
+    <div class="mt-2 ml-5">
+      <span class="text-red-600">This is wrong format</span>
+    </div>
+    } }
+  </div>
+</div>

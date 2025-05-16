@@ -1,0 +1,73 @@
+<div class="mb-5">
+  <label
+    for="profilePicture"
+    class="block text-sm font-medium text-gray-700 mb-1"
+  >
+    Profile Picture
+  </label>
+  <!-- Make this a flex row container -->
+  <div class="flex items-center space-x-6">
+    <div class="relative flex-grow max-w-lg">
+      <!-- Left icon -->
+      <div
+        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+      >
+        <svg
+          class="w-6 h-6 text-gray-800 dark:text-white"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+          class="size-6 text-gray-500"
+          viewBox="0 0 24 24"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M13 10a1 1 0 0 1 1-1h.01a1 1 0 1 1 0 2H14a1 1 0 0 1-1-1Z"
+            clip-rule="evenodd"
+          />
+          <path
+            fill-rule="evenodd"
+            d="M2 6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12c0 .556-.227 1.06-.593 1.422A.999.999 0 0 1 20.5 20H4a2.002 2.002 0 0 1-2-2V6Zm6.892 12 3.833-5.356-3.99-4.322a1 1 0 0 0-1.549.097L4 12.879V6h16v9.95l-3.257-3.619a1 1 0 0 0-1.557.088L11.2 18H8.892Z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </div>
+
+      <!-- Hidden native input -->
+      <input
+        id="profilePicture"
+        name="profilePicture"
+        type="file"
+        accept="image/*"
+        (change)="onFileChange($event)"
+        class="absolute inset-0 opacity-0 z-10 cursor-pointer"
+      />
+
+      <!-- Visible styled input with right button -->
+      <div
+        class="flex items-center bg-gray-200 border border-gray-300 rounded-full shadow-sm text-gray-700 pl-10 pr-3 py-4"
+      >
+        <span class="flex-grow truncate">
+          {{ selectedFileName || "Choose an image..." }}
+        </span>
+        <label
+          for="profilePicture"
+          class="ml-4 inline-block py-2 px-4 rounded-full bg-black text-white text-sm font-semibold cursor-pointer hover:bg-gray-800"
+        >
+          Upload
+        </label>
+      </div>
+    </div>
+
+    <!-- Image preview on the same row -->
+    @if (previewUrl) {
+    <div class="flex flex-col items-center">
+      <p class="text-sm text-gray-600 mb-2 whitespace-nowrap">Preview:</p>
+      <img
+        [src]="previewUrl"
+        alt="Preview"
+        class="w-32 h-32 object-cover rounded-full border border-gray-300"
+      />
+    </div>
+    }
+  </div>
+</div>

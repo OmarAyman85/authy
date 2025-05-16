@@ -1,0 +1,58 @@
+<div [formGroup]="userNameForm" class="mb-5">
+  <label for="userName" class="block text-sm font-medium text-gray-700 mb-1"
+    >User Name
+    <span class="text-red-600"> *</span>
+  </label>
+  <div class="relative">
+    <div
+      class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+    >
+      <svg
+        class="w-6 h-6 text-gray-800 dark:text-white"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="currentColor"
+        class="size-6 text-gray-500"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M18 6H6m12 4H6m12 4H6m12 4H6"
+        />
+      </svg>
+    </div>
+    <input
+      id="userName"
+      name="userName"
+      type="text"
+      autocomplete="userName"
+      formControlName="userName"
+      placeholder="User Name"
+      class="block w-full pl-10 pr-3 py-4 bg-gray-200 border border-gray-300 rounded-full shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+    />
+  </div>
+</div>
+<!-- User Name Validation -->
+@if (userNameForm.controls['userName'].touched) {
+@if(userNameForm.controls['userName'].errors?.['required']) {
+<div class="mt-2 ml-5">
+  <span class="text-red-600">This is required</span>
+</div>
+} @if(userNameForm.controls['userName'].errors?.['pattern']) {
+<div class="mt-2 ml-5">
+  <span class="text-red-600">This is wrong format</span>
+</div>
+}@if(userNameForm.controls['userName'].errors?.['minlength']) {
+<div class="mt-2 ml-5">
+  <span class="text-red-600">It must be more than 3 chars</span>
+</div>
+}@if(userNameForm.controls['userName'].errors?.['maxlength']) {
+<div class="mt-2 ml-5">
+  <span class="text-red-600">It must be more than 20 chars</span>
+</div>
+} }

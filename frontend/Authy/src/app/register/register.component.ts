@@ -7,10 +7,29 @@ import {
 } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { passwordMatchValidator } from '../validators/custom-validators';
+import { ProfilePictureComponent } from './profile-picture/profile-picture.component';
+import { FullNameComponent } from './full-name/full-name.component';
+import { UserNameComponent } from './user-name/user-name.component';
+import { EmailComponent } from './email/email.component';
+import { PasswordComponent } from './password/password.component';
+import { PhoneComponent } from './phone/phone.component';
+import { NationalIdComponent } from "./national-id/national-id.component";
+import { DateOfBirthComponent } from "./date-of-birth/date-of-birth.component";
 
 @Component({
   selector: 'app-register',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    ProfilePictureComponent,
+    FullNameComponent,
+    UserNameComponent,
+    EmailComponent,
+    PasswordComponent,
+    PhoneComponent,
+    NationalIdComponent,
+    DateOfBirthComponent
+],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css',
 })
@@ -91,20 +110,20 @@ export class RegisterComponent {
     console.log(formValue);
   }
 
-  previewUrl: string | ArrayBuffer | null = null;
-  selectedFileName: string = '';
+  selectedFileName = '';
+  previewUrl = '';
 
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
+  get profilePictureControl(): FormControl {
+    return this.registerReq.get('profilePicture') as FormControl;
+  }
 
-    if (input.files && input.files[0]) {
-      const selectedFileName = input.files[0];
+  onFileSelected(file: File) {
+    this.selectedFileName = file.name;
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.previewUrl = reader.result;
-      };
-      reader.readAsDataURL(input.files[0]);
-    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.previewUrl = reader.result as string;
+    };
+    reader.readAsDataURL(file);
   }
 }
