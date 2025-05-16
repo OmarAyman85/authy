@@ -15,6 +15,9 @@ import { PasswordComponent } from './password/password.component';
 import { PhoneComponent } from './phone/phone.component';
 import { NationalIdComponent } from "./national-id/national-id.component";
 import { DateOfBirthComponent } from "./date-of-birth/date-of-birth.component";
+import { GenderComponent } from "./gender/gender.component";
+import { MaritalStatusComponent } from "./marital-status/marital-status.component";
+import { RoleComponent } from "./role/role.component";
 
 @Component({
   selector: 'app-register',
@@ -28,7 +31,10 @@ import { DateOfBirthComponent } from "./date-of-birth/date-of-birth.component";
     PasswordComponent,
     PhoneComponent,
     NationalIdComponent,
-    DateOfBirthComponent
+    DateOfBirthComponent,
+    GenderComponent,
+    MaritalStatusComponent,
+    RoleComponent
 ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css',

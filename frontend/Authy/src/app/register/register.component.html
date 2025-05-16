@@ -109,6 +109,23 @@
             ></app-date-of-birth>
           </div>
         </div>
+        <!-- ################################DropDown Inputs############################################### -->
+        <div class="flex space-x-6">
+          <!-- gender Input -->
+          <div class="flex-1">
+            <app-gender [genderForm]="registerReq"></app-gender>
+          </div>
+          <!-- Marrital Status -->
+          <div class="flex-1">
+            <app-marital-status
+              [marritalStatusForm]="registerReq"
+            ></app-marital-status>
+          </div>
+          <!-- Role -->
+          <div class="flex-1">
+            <app-role [roleForm]="registerReq"></app-role>
+          </div>
+        </div>
         <!-- ############################################################################################# -->
         <!-- ################################Submit Button################################################ -->
         <!-- ############################################################################################# -->

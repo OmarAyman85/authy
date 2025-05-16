@@ -1,0 +1,50 @@
+<div [formGroup]="marritalStatusForm">
+  <label
+    for="maritalStatus"
+    class="block text-sm font-medium text-gray-700 mb-1"
+  >
+    Marrital status
+    <span class="text-red-600"> *</span>
+  </label>
+
+  <div class="relative">
+    <div
+      class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+    >
+      <svg
+        class="w-6 h-6 text-gray-800 dark:text-white"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="currentColor"
+        class="size-6 text-gray-500"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M18.045 3.007 12.31 3a1.965 1.965 0 0 0-1.4.585l-7.33 7.394a2 2 0 0 0 0 2.805l6.573 6.631a1.957 1.957 0 0 0 1.4.585 1.965 1.965 0 0 0 1.4-.585l7.409-7.477A2 2 0 0 0 21 11.479v-5.5a2.972 2.972 0 0 0-2.955-2.972Zm-2.452 6.438a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"
+        />
+      </svg>
+    </div>
+    <select
+      id="maritalStatus"
+      name="maritalStatus"
+      formControlName="maritalStatus"
+      class="block w-full pl-10 pr-3 py-4 bg-gray-200 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+    >
+      <option value="" disabled selected>Select Status</option>
+      <option value="single">Single</option>
+      <option value="married">Married</option>
+      <option value="engaged">Engaged</option>
+      <option value="divorced">Divorced</option>
+    </select>
+  </div>
+
+  <!-- Marital Status Validation -->
+  @if (marritalStatusForm.controls['maritalStatus'].touched) {
+  @if(marritalStatusForm.controls['maritalStatus'].errors?.['required']) {
+  <div class="mt-2 ml-5">
+    <span class="text-red-600">This is required</span>
+  </div>
+  } }
+</div>
