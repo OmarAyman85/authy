@@ -25,7 +25,7 @@ public class UserDTO {
     private final String middleName; // User's middle name
     private final String lastName;  // User's last name
     private final String email;     // User's email address
-    private final String username;  // User's login username
+    private final String userName;  // User's login username
     private final String password;  // User's password (should be encrypted before storage)
     private final String mobilePhone;
     private final String homePhone;

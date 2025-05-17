@@ -52,7 +52,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setMiddleName(request.getMiddleName());
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
-        user.setUsername(request.getUsername());
+        user.setUsername(request.getUserName());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setMobilePhone(request.getMobilePhone());
         user.setHomePhone(request.getHomePhone());
@@ -111,13 +111,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public AuthenticationResponse authenticate(UserDTO request) {
         // 1. Authenticate user credentials using Spring Security's AuthenticationManager
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+                new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword())
         );
 
         // 2. Retrieve the user from the database
-        User user = userRepository.findByUsername(request.getUsername())
+        User user = userRepository.findByUsername(request.getUserName())
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "User not found with username: " + request.getUsername()
+                        "User not found with username: " + request.getUserName()
                 ));
 
         // 3. If Multi-Factor Authentication (MFA) is enabled, prompt for additional verification

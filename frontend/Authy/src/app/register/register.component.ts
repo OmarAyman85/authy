@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -13,13 +13,14 @@ import { UserNameComponent } from './user-name/user-name.component';
 import { EmailComponent } from './email/email.component';
 import { PasswordComponent } from './password/password.component';
 import { PhoneComponent } from './phone/phone.component';
-import { NationalIdComponent } from "./national-id/national-id.component";
-import { DateOfBirthComponent } from "./date-of-birth/date-of-birth.component";
-import { GenderComponent } from "./gender/gender.component";
-import { MaritalStatusComponent } from "./marital-status/marital-status.component";
-import { RoleComponent } from "./role/role.component";
-import { AddressComponent } from "./address/address.component";
-import { SocialLinksComponent } from "./social-links/social-links.component";
+import { NationalIdComponent } from './national-id/national-id.component';
+import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
+import { GenderComponent } from './gender/gender.component';
+import { MaritalStatusComponent } from './marital-status/marital-status.component';
+import { RoleComponent } from './role/role.component';
+import { AddressComponent } from './address/address.component';
+import { SocialLinksComponent } from './social-links/social-links.component';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-register',
@@ -38,12 +39,15 @@ import { SocialLinksComponent } from "./social-links/social-links.component";
     MaritalStatusComponent,
     RoleComponent,
     AddressComponent,
-    SocialLinksComponent
-],
+    SocialLinksComponent,
+    HttpClientModule,
+  ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css',
 })
 export class RegisterComponent {
+  http = inject(HttpClient);
+
   registerReq: FormGroup = new FormGroup(
     {
       profilePicture: new FormControl('', []),
@@ -109,6 +113,7 @@ export class RegisterComponent {
       xUrl: new FormControl('', [
         Validators.pattern(/^(https?:\/\/)?(www\.)?(x)\.com\/.*$/),
       ]),
+      multiFactorAuth: new FormControl(false),
       bio: new FormControl('', [Validators.maxLength(500)]),
       interests: new FormControl('', [Validators.maxLength(200)]),
     },
@@ -119,6 +124,17 @@ export class RegisterComponent {
     const formValue = this.registerReq.value;
     console.log('THIS IS THE REGISTER REQUEST DETAILS : ');
     console.log(formValue);
+    this.http
+      .post('http://localhost:8081/api/register', this.registerReq.value)
+      .subscribe((res: any) => {
+        console.log('THIS IS THE RESULT AFTER REGISTERING');
+        console.log(res);
+        if (res.result) {
+          alert('User registered Successfully');
+        } else {
+          alert('User registeration Failed');
+        }
+      });
   }
 
   selectedFileName = '';
