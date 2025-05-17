@@ -46,7 +46,6 @@ public class AuthenticationController {
             var response = authenticationService.register(request);
             return request.isMfaEnabled() ? ResponseEntity.ok(response) : ResponseEntity.accepted().build();
         } catch (Exception ex) {
-            ex.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Registration failed");
         }
     }

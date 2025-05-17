@@ -1,0 +1,16 @@
+@if (secretImageUri) {
+
+<div>
+  <h2>Scan this QR code with your Authenticator app</h2>
+  <h1>Hello {{ username }}</h1>
+  <img [src]="secretImageUri" alt="MFA QR Code" />
+
+  <h3>Enter the 6-digit code from your app:</h3>
+  <input type="text" [(ngModel)]="code" maxlength="6" placeholder="123456" />
+  <button (click)="verifyCode()">Verify</button>
+  @if (errorMessage) {
+  <p style="color: red">{{ errorMessage }}</p>
+  }
+</div>
+
+}

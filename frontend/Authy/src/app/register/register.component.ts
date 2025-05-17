@@ -20,7 +20,12 @@ import { MaritalStatusComponent } from './marital-status/marital-status.componen
 import { RoleComponent } from './role/role.component';
 import { AddressComponent } from './address/address.component';
 import { SocialLinksComponent } from './social-links/social-links.component';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpClientModule,
+  HttpResponse,
+} from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -47,6 +52,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 })
 export class RegisterComponent {
   http = inject(HttpClient);
+  router = inject(Router);
 
   registerReq: FormGroup = new FormGroup(
     {
@@ -113,7 +119,7 @@ export class RegisterComponent {
       xUrl: new FormControl('', [
         Validators.pattern(/^(https?:\/\/)?(www\.)?(x)\.com\/.*$/),
       ]),
-      multiFactorAuth: new FormControl(false),
+      mfaEnabled: new FormControl(false),
       bio: new FormControl('', [Validators.maxLength(500)]),
       interests: new FormControl('', [Validators.maxLength(200)]),
     },
@@ -121,20 +127,33 @@ export class RegisterComponent {
   );
 
   onSubmit(): void {
-    const formValue = this.registerReq.value;
-    console.log('THIS IS THE REGISTER REQUEST DETAILS : ');
-    console.log(formValue);
+    console.log('THIS IS THE BODY WILL BE SENT TO THE API::');
+    console.log(this.registerReq.value);
     this.http
-      .post('http://localhost:8081/api/register', this.registerReq.value)
-      .subscribe((res: any) => {
-        console.log('THIS IS THE RESULT AFTER REGISTERING');
-        console.log(res);
-        if (res.result) {
-          alert('User registered Successfully');
-        } else {
-          alert('User registeration Failed');
+      .post('http://localhost:8081/api/register', this.registerReq.value, {
+        observe: 'response',
+      })
+      .subscribe(
+        (response: HttpResponse<any>) => {
+          console.log('THIS IS THE RESULT AFTER REGISTERING');
+          console.log('Status:', response.status);
+          console.log('Body:', response.body);
+          if (response.status === 200 && response.body?.mfaEnabled) {
+            // Store MFA data and navigate to the MFA setup page
+            const secretImageUri = response.body.secretImageUri;
+            // const userName = response.body.userName;
+            this.router.navigate(['/mfa-setup'], {
+              state: { secretImageUri },
+            });
+          } else if (response.status === 202) {
+            this.router.navigate(['/login']);
+          }
+        },
+        (error) => {
+          console.error('Registration failed:', error);
+          alert('User registration failed due to a server error');
         }
-      });
+      );
   }
 
   selectedFileName = '';

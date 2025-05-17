@@ -16,41 +16,44 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Entity representing a user in the authentication system.
- * Implements {@link UserDetails} to integrate with Spring Security.
+ * Represents a User entity within the authentication system.
+ * Integrates with Spring Security by implementing {@link UserDetails}.
  */
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor // Ensures JPA compatibility by providing a no-args constructor
-@Table(name = "users") // Renamed to avoid conflicts with SQL reserved words
+@NoArgsConstructor // Required by JPA for instantiation via reflection
+@Table(name = "users") // Table name changed to avoid SQL reserved keyword "user"
 public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id; // Unique identifier for the user
+    private long id; // Primary key for the user entity
 
     @Column(name = "profile_picture")
-    private String profilePicture;
+    private String profilePicture; // Optional URL or base64 string for user’s profile photo
 
+    // Basic personal information
     @Column(name = "first_name", nullable = false, length = 50)
-    private String firstName; // User's first name
+    private String firstName;
 
     @Column(name = "middle_name", length = 50)
-    private String middleName; // User's middle name
+    private String middleName;
 
     @Column(name = "last_name", nullable = false, length = 50)
-    private String lastName; // User's last name
+    private String lastName;
 
+    // Authentication-related fields
     @Column(unique = true, nullable = false, length = 100)
-    private String email; // Unique email for contact and verification
+    private String email; // Used for login and communication
 
     @Column(unique = true, nullable = false, length = 50)
-    private String username; // Unique username for login
+    private String username; // Unique system-wide login username
 
     @Column(nullable = false)
-    private String password; // Encrypted password for authentication
+    private String password; // Encrypted password used by Spring Security
 
+    // Contact details
     @Column(name = "Mobile_phone")
     private String mobilePhone;
 
@@ -63,82 +66,89 @@ public class User implements UserDetails {
     @Column(name = "national_ID")
     private String nationalID;
 
+    // Enum-based personal attributes
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Gender gender; // User gender (e.g., MALE, FEMALE)
+    private Gender gender; // Enum: MALE, FEMALE, OTHER, etc.
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private MaritalStatus maritalStatus; // User marital status (e.g., SINGLE, MARRIED)
+    private MaritalStatus maritalStatus; // Enum: SINGLE, MARRIED, etc.
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role; // User role (e.g., ADMIN, USER)
+    private Role role; // Enum representing access level: ADMIN, USER, etc.
 
-    @Column(name="apartment")
+    // Address details
+    @Column(name = "apartment")
     private String apartment;
 
-    @Column(name="floor")
+    @Column(name = "floor")
     private String floor;
 
-    @Column(name="street")
+    @Column(name = "street")
     private String street;
 
-    @Column(name="area")
+    @Column(name = "area")
     private String area;
 
-    @Column(name="city")
+    @Column(name = "city")
     private String city;
 
-    @Column(name="country")
+    @Column(name = "country")
     private String country;
 
-    @Column(name="postal_code")
+    @Column(name = "postal_code")
     private String postalCode;
 
-    @Column(name="Linkedin")
+    // Social media and portfolio URLs
+    @Column(name = "Linkedin")
     private String linkedinUrl;
 
-    @Column(name="github")
+    @Column(name = "github")
     private String githubUrl;
 
-    @Column(name="portfolio")
+    @Column(name = "portfolio")
     private String portfolioUrl;
 
-    @Column(name="facebook")
+    @Column(name = "facebook")
     private String facebookUrl;
 
-    @Column(name="instagram")
+    @Column(name = "instagram")
     private String instagramUrl;
 
-    @Column(name="X")
+    @Column(name = "X")
     private String xUrl;
 
-    @Column(name="bio")
-    private String bio;
+    // Additional personal details
+    @Column(name = "bio")
+    private String bio; // Short biography or about section
 
-    @Column(name="interests")
-    private String interests;
+    @Column(name = "interests")
+    private String interests; // Comma-separated user interests
 
+    // Multi-Factor Authentication (MFA)
     @Column(nullable = false)
-    private boolean mfaEnabled; // Indicates whether Multi-Factor Authentication is enabled
+    private boolean mfaEnabled; // Flag to determine if MFA is active
 
-    @Column(name="mfa_secret")
-    private String mfaSecret; // Secret key for MFA (if applicable)
+    @Column(name = "mfa_secret")
+    private String mfaSecret; // Secret key used for generating TOTP codes
 
+    // Email and third-party auth information
     @Column(nullable = false)
-    private boolean is_email_verified; // Indicates whether Multi-Factor Authentication is enabled
+    private boolean is_email_verified; // True if the user's email has been verified
 
-    @Column(name="Auth_provider")
-    private String auth_provider; // Indicates whether Multi-Factor Authentication is enabled
+    @Column(name = "Auth_provider")
+    private String auth_provider; // OAuth provider (e.g., GOOGLE, GITHUB)
 
+    // Token relationship mapping
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Token> tokens; // List of associated authentication tokens
+    private List<Token> tokens; // Associated auth tokens (e.g., JWT refresh tokens)
+
+    // ========== Spring Security UserDetails Implementation ==========
 
     /**
-     * Returns a collection of granted authorities based on the user's role.
-     *
-     * @return A list containing the user's role as an authority.
+     * Returns user authorities as a single SimpleGrantedAuthority based on their role.
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -147,9 +157,7 @@ public class User implements UserDetails {
 
     /**
      * Indicates whether the user's account is expired.
-     * Currently, all accounts are considered non-expired.
-     *
-     * @return {@code true} since accounts do not expire in this implementation.
+     * Always returns true – no expiration logic implemented.
      */
     @Override
     public boolean isAccountNonExpired() {
@@ -158,9 +166,7 @@ public class User implements UserDetails {
 
     /**
      * Indicates whether the user's account is locked.
-     * Currently, all accounts are considered non-locked.
-     *
-     * @return {@code true} since accounts are not locked in this implementation.
+     * Always returns true – locking mechanism not implemented.
      */
     @Override
     public boolean isAccountNonLocked() {
@@ -168,10 +174,8 @@ public class User implements UserDetails {
     }
 
     /**
-     * Indicates whether the user's credentials (password) are expired.
-     * Currently, all credentials are considered non-expired.
-     *
-     * @return {@code true} since credentials do not expire in this implementation.
+     * Indicates whether the user's password is expired.
+     * Always returns true – credential expiration not implemented.
      */
     @Override
     public boolean isCredentialsNonExpired() {
@@ -179,10 +183,8 @@ public class User implements UserDetails {
     }
 
     /**
-     * Indicates whether the user is enabled.
-     * Currently, all users are considered enabled.
-     *
-     * @return {@code true} since all users are enabled in this implementation.
+     * Indicates whether the user is enabled in the system.
+     * Always returns true – no enable/disable toggle implemented.
      */
     @Override
     public boolean isEnabled() {
