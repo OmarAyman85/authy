@@ -1,6 +1,54 @@
-<div class="container flex flex-col items-center justify-center min-h-screen">
-  <h1 class="text-3xl font-bold underline">Welcome to Authy!</h1>
-  <h3 class="text-3xl font-bold text-amber-500">
-    Your full authentication manager
-  </h3>
+<div
+  class="min-h-screen flex flex-col justify-center items-center bg-gray-100 px-4"
+>
+  <!-- First Row -->
+  <div class="text-center mb-12">
+    <figure
+      class="w-100 h-100 sm:w-60 sm:h-60 md:w-80 md:h-80 flex flex-col justify-center items-center rounded-full transition-all duration-300 ease-in-out float-effect overflow-hidden mx-auto mb-4"
+    >
+      <img
+        src="assets/profilepicture.png"
+        alt="Portrait of Omar Ayman"
+        class="object-cover w-full h-full"
+      />
+    </figure>
+
+    <h1 class="text-7xl font-extrabold text-gray-800">Welcome to Authy</h1>
+    <p class="text-2xl font-bold text-gray-600">
+      Your full authentication manager...
+    </p>
+  </div>
+
+  <!-- Second Row with Two Columns -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
+    <!-- Column 1 -->
+    <div
+      class="bg-white shadow-lg rounded-2xl p-8 flex flex-col items-center justify-center"
+    >
+      <h2 class="text-2xl font-semibold mb-4 text-gray-800">
+        SIGN IN EXPERIENCE
+      </h2>
+      <a
+        routerLink="/login"
+        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl transition text-center"
+      >
+        SIGN IN
+      </a>
+    </div>
+
+    <!-- Column 2 -->
+    <div
+      class="bg-white shadow-lg rounded-2xl p-8 flex flex-col items-center justify-center"
+    >
+      <h2 class="text-2xl font-semibold mb-4 text-gray-800">
+        SIGN UP EXPERIENCE
+      </h2>
+      <a
+        routerLink="/register"
+        class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-xl transition text-center"
+      >
+        SIGN UP
+      </a>
+    </div>
+  </div>
 </div>
