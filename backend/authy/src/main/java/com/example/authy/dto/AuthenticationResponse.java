@@ -22,6 +22,8 @@ public class AuthenticationResponse {
 
     private final String secretImageUri; // Optional: URI for MFA QR code image
 
+    private final String userName;
+
     /**
      * Constructor for authentication response without a secret image URI.
      *
@@ -30,7 +32,7 @@ public class AuthenticationResponse {
      * @param mfaEnabled   Whether MFA is enabled.
      */
     public AuthenticationResponse(String accessToken, String refreshToken, boolean mfaEnabled) {
-        this(accessToken, refreshToken, mfaEnabled, null);
+        this(accessToken, refreshToken, mfaEnabled, null, null);
     }
 
     /**
@@ -41,10 +43,11 @@ public class AuthenticationResponse {
      * @param mfaEnabled     Whether MFA is enabled.
      * @param secretImageUri The URI for the MFA QR code image.
      */
-    public AuthenticationResponse(String accessToken, String refreshToken, boolean mfaEnabled, String secretImageUri) {
+    public AuthenticationResponse(String accessToken, String refreshToken, boolean mfaEnabled, String secretImageUri, String userName) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.mfaEnabled = mfaEnabled;
         this.secretImageUri = secretImageUri;
+        this.userName = userName;
     }
 }

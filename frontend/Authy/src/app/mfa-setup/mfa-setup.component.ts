@@ -11,28 +11,28 @@ import { FormsModule } from '@angular/forms';
 })
 export class MfaSetupComponent {
   secretImageUri: string | null = null;
-  username: string = '';
+  userName: string = '';
   code: string = '';
   errorMessage: string = '';
 
   constructor(private router: Router, private http: HttpClient) {
     const navigation = this.router.getCurrentNavigation();
-    console.log(navigation?.extras?.state);
     this.secretImageUri = navigation?.extras?.state?.['secretImageUri'] || null;
-    this.username = navigation?.extras?.state?.['userName'] || '';
-    console.log('USERNAME::::' + this.username);
-    console.log('SecretImageUri::::' + this.secretImageUri);
+    this.userName = navigation?.extras?.state?.['userName'] || '';
   }
 
   verifyCode() {
+    console.log('THE CODE ::::: ' + this.code);
+    console.log('THE CODE ::::: ' + this.userName);
     this.http
       .post<any>('http://localhost:8081/api/verify-code', {
-        username: this.username,
+        username: this.userName,
         code: this.code,
       })
       .subscribe({
         next: (response) => {
-          const token = response.token;
+          console.log('RESPONSE::: ' + JSON.stringify(response));
+          const token = response.access_token;
           if (token) {
             localStorage.setItem('jwtToken', token);
             this.router.navigate(['/']);

@@ -96,7 +96,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 token,
                 refreshToken,
                 user.isMfaEnabled(),
-                user.isMfaEnabled() ? twoFactorAuthenticationService.generateQRCode(user.getMfaSecret()) : null);
+                user.isMfaEnabled() ? twoFactorAuthenticationService.generateQRCode(user.getMfaSecret()) : null,
+                user.isMfaEnabled() ? user.getUsername() : null
+                );
     }
 
     /**
@@ -121,7 +123,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         // 3. If Multi-Factor Authentication (MFA) is enabled, prompt for additional verification
         if (user.isMfaEnabled()) {
             // Returning null tokens and MFA required flag = true
-            return new AuthenticationResponse(null, null, true, request.getUserName());
+            return new AuthenticationResponse(null, null, true);
         }
 
         // 4. Generate access and refresh tokens
@@ -135,7 +137,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         saveUserToken(token, user);
 
         // 7. Return both tokens and indicate that MFA is not required
-        return new AuthenticationResponse(token, refreshToken, false, request.getUserName());
+        return new AuthenticationResponse(token, refreshToken, false);
     }
 
     /**
@@ -166,7 +168,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             revokeAllUserTokens(user);
             saveUserToken(newAccessToken, user);
 
-            return ResponseEntity.ok(new AuthenticationResponse(newAccessToken, refreshToken, user.isMfaEnabled(), user.getUsername()));
+            return ResponseEntity.ok(new AuthenticationResponse(newAccessToken, refreshToken, user.isMfaEnabled()));
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -193,7 +195,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         revokeAllUserTokens(user);
         saveUserToken(token, user);
 
-        return new AuthenticationResponse(token, null, false, null);
+        return new AuthenticationResponse(token, null, true, null, null);
     }
 
     /**

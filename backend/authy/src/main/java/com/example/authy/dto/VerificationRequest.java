@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class VerificationRequest {
 
-    private final String email;    // User's email associated with the verification request
+//    private final String email;    // User's email associated with the verification request
     private final String username; // Username for identity verification
     private final String code;     // Verification code provided by the user
 

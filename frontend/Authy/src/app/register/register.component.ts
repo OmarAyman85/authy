@@ -141,9 +141,9 @@ export class RegisterComponent {
           if (response.status === 200 && response.body?.mfaEnabled) {
             // Store MFA data and navigate to the MFA setup page
             const secretImageUri = response.body.secretImageUri;
-            // const userName = response.body.userName;
+            const userName = response.body.userName;
             this.router.navigate(['/mfa-setup'], {
-              state: { secretImageUri },
+              state: { secretImageUri, userName },
             });
           } else if (response.status === 202) {
             this.router.navigate(['/login']);
