@@ -7,6 +7,7 @@ import com.example.authy.services.authentication.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,9 +42,15 @@ public class AuthenticationController {
      */
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody UserDTO request) {
-        var response = authenticationService.register(request);
-        return request.isMfaEnabled() ? ResponseEntity.ok(response) : ResponseEntity.accepted().build();
+        try {
+            var response = authenticationService.register(request);
+            return request.isMfaEnabled() ? ResponseEntity.ok(response) : ResponseEntity.accepted().build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Registration failed");
+        }
     }
+
 
     /**
      * Authenticates a user based on credentials.

@@ -23,6 +23,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.naming.AuthenticationException;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -46,18 +47,44 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public AuthenticationResponse register(UserDTO request) {
         User user = new User();
+        user.setProfilePicture(request.getProfilePicture());
         user.setFirstName(request.getFirstName());
+        user.setMiddleName(request.getMiddleName());
         user.setLastName(request.getLastName());
-        user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
-        user.setMfaEnabled(request.isMfaEnabled());
+        user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setMobilePhone(request.getMobilePhone());
+        user.setHomePhone(request.getHomePhone());
+        user.setDateOfBirth(request.getDateOfBirth());
+        user.setNationalID(request.getNationalID());
+        user.setGender(request.getGender());
+        user.setMaritalStatus(request.getMaritalStatus());
         user.setRole(request.getRole());
+        user.setApartment(request.getApartment());
+        user.setFloor(request.getFloor());
+        user.setStreet(request.getStreet());
+        user.setArea(request.getArea());
+        user.setCity(request.getCity());
+        user.setCountry(request.getCountry());
+        user.setPostalCode(request.getPostalCode());
+        user.setLinkedinUrl(request.getLinkedinUrl());
+        user.setGithubUrl(request.getGithubUrl());
+        user.setPortfolioUrl(request.getPortfolioUrl());
+        user.setFacebookUrl(request.getFacebookUrl());
+        user.setInstagramUrl(request.getInstagramUrl());
+        user.setXUrl(request.getXUrl());
+        user.setBio(request.getBio());
+        user.setInterests(request.getInterests());
 
+        user.setMfaEnabled(request.isMfaEnabled());
         // Generate MFA secret if MFA is enabled
         if (request.isMfaEnabled()) {
-            user.setSecret(twoFactorAuthenticationService.generateNewSecret());
+            user.setMfaSecret(twoFactorAuthenticationService.generateNewSecret());
         }
+
+        user.set_email_verified(request.is_email_verified());
+        user.setAuth_provider(request.getAuth_provider());
 
         user = userRepository.save(user);
 
@@ -70,7 +97,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 token,
                 refreshToken,
                 user.isMfaEnabled(),
-                user.isMfaEnabled() ? twoFactorAuthenticationService.generateQRCode(user.getSecret()) : null
+                user.isMfaEnabled() ? twoFactorAuthenticationService.generateQRCode(user.getMfaSecret()) : null
         );
     }
 
@@ -82,24 +109,34 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      */
     @Override
     public AuthenticationResponse authenticate(UserDTO request) {
+        // 1. Authenticate user credentials using Spring Security's AuthenticationManager
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
 
+        // 2. Retrieve the user from the database
         User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + request.getUsername()));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "User not found with username: " + request.getUsername()
+                ));
 
-        // If MFA is enabled, require verification
+        // 3. If Multi-Factor Authentication (MFA) is enabled, prompt for additional verification
         if (user.isMfaEnabled()) {
+            // Returning null tokens and MFA required flag = true
             return new AuthenticationResponse(null, null, true);
         }
 
+        // 4. Generate access and refresh tokens
         String token = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
 
+        // 5. Revoke any previously active tokens for this user to maintain security
         revokeAllUserTokens(user);
+
+        // 6. Persist the new access token to the database
         saveUserToken(token, user);
 
+        // 7. Return both tokens and indicate that MFA is not required
         return new AuthenticationResponse(token, refreshToken, false);
     }
 
@@ -149,7 +186,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         "User not found with username: " + verificationRequest.getUsername()));
 
-        if (!twoFactorAuthenticationService.isOtpValid(user.getSecret(), verificationRequest.getCode())) {
+        if (!twoFactorAuthenticationService.isOtpValid(user.getMfaSecret(), verificationRequest.getCode())) {
             throw new BadCredentialsException("Invalid verification code.");
         }
 
