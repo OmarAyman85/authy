@@ -32,24 +32,21 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests(auth -> auth
-//                                .requestMatchers(
-//                                        "/api",
-//                                        "/api/login",
-//                                        "/api/register",
-//                                        "/oauth2/**",
-//                                        "/api/refresh-token",
-//                                        "/swagger-ui/**",
-//                                        "/v3/api-docs/**",
-//                                        "/swagger-resources/**",
-//                                        "/webjars/**"
-//                                )
-//                                .permitAll()
-////                        .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
-//                                .anyRequest().authenticated()
-//                )
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // Ensure all requests are allowed
+                                .requestMatchers(
+                                        "/api",
+                                        "/api/login",
+                                        "/api/register",
+                                        "/oauth2/**",
+                                        "/api/refresh-token",
+                                        "/swagger-ui/**",
+                                        "/v3/api-docs/**",
+                                        "/swagger-resources/**",
+                                        "/webjars/**"
+                                )
+                                .permitAll()
+                        .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                                .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2Login(oauth2 -> oauth2

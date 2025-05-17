@@ -21,7 +21,7 @@ import static dev.samstevens.totp.util.Utils.getDataUriForImage;
 @Slf4j
 public class TwoFactorAuthenticationService {
 
-    private static final String ISSUER = "Savvy";
+    private static final String ISSUER = "Authy";
     private static final int OTP_DIGITS = 6;
     private static final int OTP_PERIOD = 30;
     private static final HashingAlgorithm HASH_ALGORITHM = HashingAlgorithm.SHA1;
