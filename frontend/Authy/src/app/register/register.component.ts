@@ -135,9 +135,6 @@ export class RegisterComponent {
       })
       .subscribe(
         (response: HttpResponse<any>) => {
-          console.log('THIS IS THE RESULT AFTER REGISTERING');
-          console.log('Status:', response.status);
-          console.log('Body:', response.body);
           if (response.status === 200 && response.body?.mfaEnabled) {
             // Store MFA data and navigate to the MFA setup page
             const secretImageUri = response.body.secretImageUri;

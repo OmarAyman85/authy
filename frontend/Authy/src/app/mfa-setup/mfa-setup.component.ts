@@ -22,8 +22,6 @@ export class MfaSetupComponent {
   }
 
   verifyCode() {
-    console.log('THE CODE ::::: ' + this.code);
-    console.log('THE CODE ::::: ' + this.userName);
     this.http
       .post<any>('http://localhost:8081/api/verify-code', {
         username: this.userName,
@@ -31,7 +29,6 @@ export class MfaSetupComponent {
       })
       .subscribe({
         next: (response) => {
-          console.log('RESPONSE::: ' + JSON.stringify(response));
           const token = response.access_token;
           if (token) {
             localStorage.setItem('jwtToken', token);
