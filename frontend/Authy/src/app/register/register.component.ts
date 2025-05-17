@@ -18,6 +18,8 @@ import { DateOfBirthComponent } from "./date-of-birth/date-of-birth.component";
 import { GenderComponent } from "./gender/gender.component";
 import { MaritalStatusComponent } from "./marital-status/marital-status.component";
 import { RoleComponent } from "./role/role.component";
+import { AddressComponent } from "./address/address.component";
+import { SocialLinksComponent } from "./social-links/social-links.component";
 
 @Component({
   selector: 'app-register',
@@ -34,7 +36,9 @@ import { RoleComponent } from "./role/role.component";
     DateOfBirthComponent,
     GenderComponent,
     MaritalStatusComponent,
-    RoleComponent
+    RoleComponent,
+    AddressComponent,
+    SocialLinksComponent
 ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css',
@@ -79,6 +83,7 @@ export class RegisterComponent {
       role: new FormControl('', [Validators.required]),
       apartment: new FormControl('', [Validators.maxLength(10)]),
       floor: new FormControl('', [Validators.pattern(/^[0-9]*$/)]),
+      street: new FormControl('', [Validators.required]),
       area: new FormControl('', [Validators.required, Validators.minLength(3)]),
       city: new FormControl('', [Validators.required]),
       country: new FormControl('', [Validators.required]),
@@ -102,7 +107,7 @@ export class RegisterComponent {
         Validators.pattern(/^(https?:\/\/)?(www\.)?instagram\.com\/.*$/),
       ]),
       xUrl: new FormControl('', [
-        Validators.pattern(/^(https?:\/\/)?(www\.)?(twitter|x)\.com\/.*$/),
+        Validators.pattern(/^(https?:\/\/)?(www\.)?(x)\.com\/.*$/),
       ]),
       bio: new FormControl('', [Validators.maxLength(500)]),
       interests: new FormControl('', [Validators.maxLength(200)]),

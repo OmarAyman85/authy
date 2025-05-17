@@ -1,0 +1,338 @@
+<!-- Address Section -->
+<div class="mb-5">
+  <h3 class="text-lg font-semibold text-gray-800 mb-4">Address</h3>
+
+  <div
+    [formGroup]="addressForm"
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+  >
+    <!-- Apartment Input -->
+    <div>
+      <label
+        for="apartment"
+        class="block text-sm font-medium text-gray-700 mb-1"
+      >
+        Apartment <span class="text-red-600"> *</span>
+      </label>
+      <div class="relative">
+        <div
+          class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+        >
+          <svg
+            class="w-6 h-6 text-gray-800 dark:text-white"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="currentColor"
+            class="size-6 text-gray-500"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 6h8M6 10h12M8 14h8M6 18h12"
+            />
+          </svg>
+        </div>
+        <input
+          id="apartment"
+          name="apartment"
+          type="text"
+          formControlName="apartment"
+          placeholder="Apartment"
+          class="block w-full pl-10 pr-3 py-4 bg-gray-200 border border-gray-300 rounded-full shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+        />
+      </div>
+      @if (addressForm.controls['apartment'].touched &&
+      addressForm.controls['apartment'].errors?.['maxlength']) {
+      <div class="mt-2 ml-5">
+        <span class="text-red-600">Maximum length is 10 numbers</span>
+      </div>
+      }
+    </div>
+
+    <!-- Floor Input -->
+    <div>
+      <label for="floor" class="block text-sm font-medium text-gray-700 mb-1">
+        Floor <span class="text-red-600"> *</span>
+      </label>
+      <div class="relative">
+        <div
+          class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+        >
+          <svg
+            class="w-6 h-6 text-gray-800 dark:text-white"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="currentColor"
+            class="size-6 text-gray-500"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 6h8M6 10h12M8 14h8M6 18h12"
+            />
+          </svg>
+        </div>
+        <input
+          id="floor"
+          name="floor"
+          type="number"
+          formControlName="floor"
+          placeholder="Floor"
+          class="block w-full pl-10 pr-3 py-4 bg-gray-200 border border-gray-300 rounded-full shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+        />
+      </div>
+      @if (addressForm.controls['floor'].touched &&
+      addressForm.controls['floor'].errors?.['pattern']) {
+      <div class="mt-2 ml-5">
+        <span class="text-red-600">It must contain only numbers</span>
+      </div>
+      }
+    </div>
+
+    <!-- Street Input -->
+    <div>
+      <label for="street" class="block text-sm font-medium text-gray-700 mb-1">
+        Street <span class="text-red-600"> *</span>
+      </label>
+      <div class="relative">
+        <div
+          class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+        >
+          <svg
+            class="w-6 h-6 text-gray-800 dark:text-white"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="currentColor"
+            class="size-6 text-gray-500"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 6h8M6 10h12M8 14h8M6 18h12"
+            />
+          </svg>
+        </div>
+        <input
+          id="street"
+          name="street"
+          type="text"
+          formControlName="street"
+          placeholder="Street"
+          class="block w-full pl-10 pr-3 py-4 bg-gray-200 border border-gray-300 rounded-full shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+        />
+      </div>
+      @if (addressForm.controls['street'].touched &&
+      addressForm.controls['street'].errors?.['required']) {
+      <div class="mt-2 ml-5">
+        <span class="text-red-600">Street is required</span>
+      </div>
+      }
+    </div>
+
+    <!-- Area Input -->
+    <div>
+      <label for="area" class="block text-sm font-medium text-gray-700 mb-1">
+        Area <span class="text-red-600"> *</span>
+      </label>
+      <div class="relative">
+        <div
+          class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+        >
+          <svg
+            class="w-6 h-6 text-gray-800 dark:text-white"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="currentColor"
+            class="size-6 text-gray-500"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 6h8M6 10h12M8 14h8M6 18h12"
+            />
+          </svg>
+        </div>
+        <input
+          id="area"
+          name="area"
+          type="text"
+          formControlName="area"
+          placeholder="Area"
+          class="block w-full pl-10 pr-3 py-4 bg-gray-200 border border-gray-300 rounded-full shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+        />
+      </div>
+      @if (addressForm.controls['area'].touched ){ @if (
+      addressForm.controls['area'].errors?.['required']) {
+      <div class="mt-2 ml-5">
+        <span class="text-red-600">Area is required</span>
+      </div>
+      } @if ( addressForm.controls['area'].errors?.['minlength']) {
+      <div class="mt-2 ml-5">
+        <span class="text-red-600">Area must be more than 3 chars</span>
+      </div>
+      } }
+    </div>
+
+    <!-- City Input -->
+    <div>
+      <label for="city" class="block text-sm font-medium text-gray-700 mb-1">
+        City <span class="text-red-600"> *</span>
+      </label>
+      <div class="relative">
+        <div
+          class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+        >
+          <svg
+            class="w-6 h-6 text-gray-800 dark:text-white"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="currentColor"
+            class="size-6 text-gray-500"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 6h8M6 10h12M8 14h8M6 18h12"
+            />
+          </svg>
+        </div>
+        <input
+          id="city"
+          name="city"
+          type="text"
+          formControlName="city"
+          placeholder="City"
+          class="block w-full pl-10 pr-3 py-4 bg-gray-200 border border-gray-300 rounded-full shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+        />
+      </div>
+      @if (addressForm.controls['city'].touched &&
+      addressForm.controls['city'].errors?.['required']) {
+      <div class="mt-2 ml-5">
+        <span class="text-red-600">City is required</span>
+      </div>
+      }
+    </div>
+
+    <!-- Country Input -->
+    <div>
+      <label for="country" class="block text-sm font-medium text-gray-700 mb-1">
+        Country <span class="text-red-600"> *</span>
+      </label>
+      <div class="relative">
+        <div
+          class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+        >
+          <svg
+            class="w-6 h-6 text-gray-800 dark:text-white"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="currentColor"
+            class="size-6 text-gray-500"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 6h8M6 10h12M8 14h8M6 18h12"
+            />
+          </svg>
+        </div>
+        <input
+          id="country"
+          name="country"
+          type="text"
+          formControlName="country"
+          placeholder="Country"
+          class="block w-full pl-10 pr-3 py-4 bg-gray-200 border border-gray-300 rounded-full shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+        />
+      </div>
+      @if (addressForm.controls['country'].touched &&
+      addressForm.controls['country'].errors?.['required']) {
+      <div class="mt-2 ml-5">
+        <span class="text-red-600">Country is required</span>
+      </div>
+      }
+    </div>
+
+    <!-- Postal Code Input -->
+    <div>
+      <label
+        for="postalCode"
+        class="block text-sm font-medium text-gray-700 mb-1"
+      >
+        Postal Code <span class="text-red-600"> *</span>
+      </label>
+      <div class="relative">
+        <div
+          class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+        >
+          <svg
+            class="w-6 h-6 text-gray-800 dark:text-white"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="currentColor"
+            class="size-6 text-gray-500"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 6h8M6 10h12M8 14h8M6 18h12"
+            />
+          </svg>
+        </div>
+        <input
+          id="postalCode"
+          name="postalCode"
+          type="text"
+          formControlName="postalCode"
+          placeholder="Postal Code"
+          class="block w-full pl-10 pr-3 py-4 bg-gray-200 border border-gray-300 rounded-full shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+        />
+      </div>
+      @if (addressForm.controls['postalCode'].touched ){ @if (
+      addressForm.controls['postalCode'].errors?.['required']) {
+      <div class="mt-2 ml-5">
+        <span class="text-red-600">Postal code is required</span>
+      </div>
+      } @if ( addressForm.controls['postalCode'].errors?.['pattern']) {
+      <div class="mt-2 ml-5">
+        <span class="text-red-600">Wrong format</span>
+      </div>
+      }}
+    </div>
+  </div>
+</div>

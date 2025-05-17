@@ -1,5 +1,5 @@
-<div class="flex w-full justify-between items-center h-screen">
-  <div class="w-2/3 min-h-screen flex items-center justify-center">
+<div class="flex w-full justify-between">
+  <div class="w-2/3 mt-16 mb-10 min-h-screen flex justify-center">
     <div class="rounded-lg p-6 w-5/6">
       <div class="mb-8 text-start">
         <h1 class="font-extrabold text-gray-800 text-8xl">Welcome</h1>
@@ -126,6 +126,10 @@
             <app-role [roleForm]="registerReq"></app-role>
           </div>
         </div>
+        <!-- ################################Address Inputs############################################### -->
+        <app-address [addressForm]="registerReq"></app-address>
+        <!-- ################################Social Links Inputs########################################## -->
+        <app-social-links [socialLinksForm]="registerReq"></app-social-links>
         <!-- ############################################################################################# -->
         <!-- ################################Submit Button################################################ -->
         <!-- ############################################################################################# -->
