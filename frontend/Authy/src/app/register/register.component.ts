@@ -127,8 +127,6 @@ export class RegisterComponent {
   );
 
   onSubmit(): void {
-    console.log('THIS IS THE BODY WILL BE SENT TO THE API::');
-    console.log(this.registerReq.value);
     this.http
       .post('http://localhost:8081/api/register', this.registerReq.value, {
         observe: 'response',

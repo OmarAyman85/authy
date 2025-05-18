@@ -28,7 +28,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-@CrossOrigin("*") // Allows requests from any origin (adjust as needed for security)
+@CrossOrigin(origins = "http://localhost:4200") // Allows requests from any origin (adjust as needed for security)
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
@@ -67,6 +67,7 @@ public class AuthenticationController {
      */
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> loginUser(@RequestBody UserDTO request) {
+        System.out.println("Login API hit: " + request.getUserName());
         return ResponseEntity.ok(authenticationService.authenticate(request));
     }
 
@@ -89,11 +90,9 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticationService.verifyCode(verificationRequest));
     }
 
-//    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/upload-profile-picture")
     public ResponseEntity<String> uploadProfilePicture(
             @RequestParam("file") MultipartFile file
-//            @RequestParam("userId") Long userId
     ) {
         try {
             String fileUrl = profilePictureService.storeProfilePicture(file);

@@ -44,11 +44,11 @@
               </svg>
             </div>
             <input
-              id="username"
-              name="username"
-              type="username"
-              autocomplete="username"
-              formControlName="email"
+              id="userName"
+              name="userName"
+              type="text"
+              autocomplete="userName"
+              formControlName="userName"
               placeholder="your@email.com"
               class="block w-full pl-10 pr-3 py-4 bg-gray-200 border border-gray-300 rounded-full shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
             />
@@ -56,12 +56,12 @@
         </div>
 
         <!-- Email Validation -->
-        @if (loginReq.controls['email'].touched) {
-        @if(loginReq.controls['email'].errors?.['required']) {
+        @if (loginReq.controls['userName'].touched) {
+        @if(loginReq.controls['userName'].errors?.['required']) {
         <div class="mt-2 ml-5">
           <span class="text-red-600">This is required</span>
         </div>
-        } @if(loginReq.controls['email'].errors?.['email']) {
+        } @if(loginReq.controls['userName'].errors?.['email']) {
         <div class="mt-2 ml-5">
           <span class="text-red-600">This is wrong format</span>
         </div>

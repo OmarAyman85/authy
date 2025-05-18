@@ -52,10 +52,10 @@ public class SecurityConfig {
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/api/login") // Custom login page instead of redirecting
-                        .defaultSuccessUrl("/api", true) // Redirect after successful login
-                )
+//                .oauth2Login(oauth2 -> oauth2
+//                        .loginPage("/api/login") // Custom login page instead of redirecting
+//                        .defaultSuccessUrl("/api", true) // Redirect after successful login
+//                )
                 .userDetailsService(userDetailsService)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout(logout -> logout

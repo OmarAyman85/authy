@@ -114,10 +114,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword())
         );
 
+        System.out.println("Attempting to authenticate: " + request.getUserName());
+
+        Optional<User> userOpt = userRepository.findByUsernameOrEmail(request.getUserName(), request.getUserName());
+        System.out.println("User found: " + userOpt.isPresent());
+
         // 2. Retrieve the user from the database
-        User user = userRepository.findByUsername(request.getUserName())
+        User user = userRepository.findByUsernameOrEmail(request.getUserName(),request.getUserName())
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "User not found with username: " + request.getUserName()
+                        "User not found with username or email: " + request.getUserName()
                 ));
 
         // 3. If Multi-Factor Authentication (MFA) is enabled, prompt for additional verification
@@ -159,7 +164,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String refreshToken = authHeader.substring(7);
         String username = jwtService.getUsernameFromToken(refreshToken);
 
-        Optional<User> optionalUser = userRepository.findByUsername(username);
+        Optional<User> optionalUser = userRepository.findByUsernameOrEmail(username, username);
 
         if (optionalUser.isPresent() && jwtService.isValidRefreshToken(refreshToken, optionalUser.get())) {
             User user = optionalUser.get();
@@ -182,7 +187,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      */
     @Override
     public AuthenticationResponse verifyCode(VerificationRequest verificationRequest) {
-        User user = userRepository.findByUsername(verificationRequest.getUsername())
+        User user = userRepository.findByUsernameOrEmail(verificationRequest.getUsername(), verificationRequest.getUsername())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "User not found with username: " + verificationRequest.getUsername()));
 
