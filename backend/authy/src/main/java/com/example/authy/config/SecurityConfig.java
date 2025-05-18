@@ -39,6 +39,8 @@ public class SecurityConfig {
                                         "/api/register",
                                         "/oauth2/**",
                                         "/api/refresh-token",
+                                        "/api/upload-profile-picture",
+                                        "/uploads/**",
                                         "/api/verify-code",
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**",

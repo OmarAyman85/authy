@@ -160,13 +160,8 @@ export class RegisterComponent {
     return this.registerReq.get('profilePicture') as FormControl;
   }
 
-  onFileSelected(file: File) {
-    this.selectedFileName = file.name;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.previewUrl = reader.result as string;
-    };
-    reader.readAsDataURL(file);
+  onProfileUrlChanged(newUrl: string) {
+    console.log('Profile picture URL updated:', newUrl);
+    this.previewUrl = newUrl;
   }
 }

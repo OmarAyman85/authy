@@ -82,9 +82,8 @@
         <!-- ################################Profile Picture Input######################################## -->
         <app-profile-picture
           [control]="profilePictureControl"
-          [selectedFileName]="selectedFileName"
           [previewUrl]="previewUrl"
-          (fileSelected)="onFileSelected($event)"
+          (profileUrlChanged)="onProfileUrlChanged($event)"
         ></app-profile-picture>
         <!-- ################################Full name Input############################################## -->
         <app-full-name [fullNameForm]="registerReq"></app-full-name>
