@@ -1,0 +1,13 @@
+@if (user) {
+<div>
+  <h2>{{ user.firstName }} {{ user.lastName }}</h2>
+  <p><strong>Email:</strong> {{ user.email }}</p>
+  <p><strong>Username:</strong> {{ user.username }}</p>
+  <p><strong>Phone:</strong> {{ user.mobilePhone }}</p>
+  <!-- Add more fields as needed -->
+</div>
+} @else {
+<ng-template #loading>
+  <p>Loading user details...</p>
+</ng-template>
+}

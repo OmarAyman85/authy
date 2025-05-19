@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import {
   FormControl,
@@ -11,6 +11,7 @@ import {
   HttpClientModule,
   HttpResponse,
 } from '@angular/common/http';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -22,6 +23,7 @@ import {
 export class LoginComponent {
   http = inject(HttpClient);
   router = inject(Router);
+  authService = inject(AuthService);
 
   loginReq: FormGroup = new FormGroup({
     userName: new FormControl('', [
@@ -41,16 +43,12 @@ export class LoginComponent {
       })
       .subscribe(
         (response: HttpResponse<any>) => {
-          // if (response.status === 200 && response.body?.mfaEnabled) {
-          //   // Store MFA data and navigate to the MFA setup page
-          //   const secretImageUri = response.body.secretImageUri;
-          //   const userName = response.body.userName;
-          //   this.router.navigate(['/mfa-setup'], {
-          //     state: { secretImageUri, userName },
-          //   });
-          // } else
           if (response.status === 200) {
-            this.router.navigate(['/']);
+            const token = response.body?.access_token;
+            if (token) {
+              this.authService.setAccessToken(token);
+              this.router.navigate(['/user-details']);
+            }
           }
         },
         (error) => {
