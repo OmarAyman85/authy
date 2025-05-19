@@ -3,13 +3,19 @@ package com.example.authy.controller;
 import com.example.authy.dto.AuthenticationResponse;
 import com.example.authy.dto.UserDTO;
 import com.example.authy.dto.VerificationRequest;
+import com.example.authy.model.entity.User;
+import com.example.authy.security.jwt.JwtService;
 import com.example.authy.services.authentication.AuthenticationService;
 import com.example.authy.services.profilePicture.ProfilePictureService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -28,11 +35,12 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200") // Allows requests from any origin (adjust as needed for security)
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
     private final ProfilePictureService profilePictureService;
+    private final UserDetailsService userDetailsService;
+    private final JwtService jwtService;
 
     /**
      * Default endpoint providing a welcome message.
@@ -66,9 +74,26 @@ public class AuthenticationController {
      * @return JWT authentication response.
      */
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> loginUser(@RequestBody UserDTO request) {
-        System.out.println("Login API hit: " + request.getUserName());
-        return ResponseEntity.ok(authenticationService.authenticate(request));
+    public ResponseEntity<AuthenticationResponse> loginUser(@RequestBody UserDTO request,  HttpServletResponse response) {
+        AuthenticationResponse authResponse = authenticationService.authenticate(request);
+
+        // Generate refresh token again here, or change service to return it too (for cookie)
+        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUserName());
+        String refreshToken = jwtService.generateRefreshToken(userDetails);
+
+        // Set refresh token cookie
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(false)
+                .path("/") // set to your refresh endpoint
+                .maxAge(7 * 24 * 60 * 60) // e.g. 7 days
+                .sameSite("Strict")
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+
+        // Return access token in JSON response
+        return ResponseEntity.ok(authResponse);
     }
 
     /**
@@ -111,8 +136,8 @@ public class AuthenticationController {
      * @return Response containing new authentication token.
      * @throws IOException If an error occurs while processing the request.
      */
-    @PostMapping("/refresh-token")
+    @GetMapping("/refresh-token")
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        return ResponseEntity.ok(authenticationService.refreshToken(request, response));
+        return authenticationService.refreshToken(request, response);
     }
 }

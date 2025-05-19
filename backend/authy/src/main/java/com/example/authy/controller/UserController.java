@@ -1,8 +1,10 @@
 package com.example.authy.controller;
 
 import com.example.authy.dto.UserDTO;
+import com.example.authy.model.entity.User;
 import com.example.authy.services.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +20,8 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/me")
-    public UserDTO getCurrentUser(@AuthenticationPrincipal(expression = "username") String username) {
-        return userService.getUserDetails(username);
+    public ResponseEntity<UserDTO> getCurrentUser(@AuthenticationPrincipal User user) {
+        UserDTO userDTO = userService.getUserDetails(user.getUsername());
+        return ResponseEntity.ok(userDTO);
     }
 }

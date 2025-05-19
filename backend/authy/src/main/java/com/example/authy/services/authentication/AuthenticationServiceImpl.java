@@ -11,6 +11,7 @@ import com.example.authy.repository.UserRepository;
 import com.example.authy.security.jwt.JwtService;
 import com.example.authy.security.mfa.TwoFactorAuthenticationService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Optional;
 
 @Service
@@ -94,7 +96,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         return new AuthenticationResponse(
                 token,
-                refreshToken,
                 user.isMfaEnabled(),
                 user.isMfaEnabled() ? twoFactorAuthenticationService.generateQRCode(user.getMfaSecret()) : null,
                 user.isMfaEnabled() ? user.getUsername() : null
@@ -128,56 +129,84 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         // 3. If Multi-Factor Authentication (MFA) is enabled, prompt for additional verification
         if (user.isMfaEnabled()) {
             // Returning null tokens and MFA required flag = true
-            return new AuthenticationResponse(null, null, true);
+            return new AuthenticationResponse(null, true);
         }
 
         // 4. Generate access and refresh tokens
         String token = jwtService.generateToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
-
+//        String refreshToken = jwtService.generateRefreshToken(user);
         // 5. Revoke any previously active tokens for this user to maintain security
         revokeAllUserTokens(user);
 
         // 6. Persist the new access token to the database
         saveUserToken(token, user);
 
-        // 7. Return both tokens and indicate that MFA is not required
-        return new AuthenticationResponse(token, refreshToken, false);
+        // 7. Return the access tokens and indicate that MFA is not required
+        return new AuthenticationResponse(token, false);
     }
 
     /**
      * Refreshes authentication token if the provided refresh token is valid.
      *
      * @param request  HTTP request containing refresh token
-     * @param response HTTP response
+//     * @param response HTTP response
      * @return ResponseEntity with new authentication token or unauthorized status
-     * @throws IOException If an error occurs during response handling
+//     * @throws IOException If an error occurs during response handling
      */
-    @Override
-    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+    private String getRefreshTokenFromCookie(HttpServletRequest request) {
+        if (request.getCookies() == null) {
+            System.out.println("********************************************");
+            System.out.println("********************************************");
+            System.out.println("No cookies found in request");
+            return null;
+        }
+        for (Cookie cookie : request.getCookies()) {
+            System.out.println("********************************************");
+            System.out.println("********************************************");
+            System.out.println("Cookie found: " + cookie.getName() + " = " + cookie.getValue());
+            if ("refreshToken".equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        System.out.println("********************************************");
+        System.out.println("********************************************");
+        System.out.println("refreshToken cookie not found");
+        return null;
+    }
+
+
+    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String refreshToken = getRefreshTokenFromCookie(request);
+
+        if (refreshToken == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        String refreshToken = authHeader.substring(7);
         String username = jwtService.getUsernameFromToken(refreshToken);
-
         Optional<User> optionalUser = userRepository.findByUsernameOrEmail(username, username);
 
         if (optionalUser.isPresent() && jwtService.isValidRefreshToken(refreshToken, optionalUser.get())) {
             User user = optionalUser.get();
             String newAccessToken = jwtService.generateToken(user);
+            String newRefreshToken = jwtService.generateRefreshToken(user);
 
             revokeAllUserTokens(user);
             saveUserToken(newAccessToken, user);
 
-            return ResponseEntity.ok(new AuthenticationResponse(newAccessToken, refreshToken, user.isMfaEnabled()));
+            // Set new refresh token cookie (HttpOnly, Secure, etc.)
+            Cookie cookie = new Cookie("refreshToken", newRefreshToken);
+            cookie.setHttpOnly(true);
+            cookie.setSecure(false); // if using HTTPS
+            cookie.setPath("/"); // path scope
+            response.addCookie(cookie);
+
+            return ResponseEntity.ok(new AuthenticationResponse(newAccessToken, user.isMfaEnabled()));
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
+
 
     /**
      * Verifies the user's Multi-Factor Authentication (MFA) code.
@@ -200,7 +229,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         revokeAllUserTokens(user);
         saveUserToken(token, user);
 
-        return new AuthenticationResponse(token, null, true, null, null);
+        return new AuthenticationResponse(token, true, null, null);
     }
 
     /**

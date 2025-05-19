@@ -40,6 +40,7 @@ export class LoginComponent {
     this.http
       .post('http://localhost:8081/api/login', this.loginReq.value, {
         observe: 'response',
+        withCredentials: true,
       })
       .subscribe(
         (response: HttpResponse<any>) => {
@@ -47,6 +48,7 @@ export class LoginComponent {
             const token = response.body?.access_token;
             if (token) {
               this.authService.setAccessToken(token);
+              console.log('THE ACCESS TOKEN : ', token);
               this.router.navigate(['/user-details']);
             }
           }
