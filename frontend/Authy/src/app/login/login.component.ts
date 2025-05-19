@@ -35,8 +35,6 @@ export class LoginComponent {
   });
 
   onSubmit(): void {
-    console.log('THIS IS THE BODY WILL BE SENT TO THE API::');
-    console.log(this.loginReq.value);
     this.http
       .post('http://localhost:8081/api/login', this.loginReq.value, {
         observe: 'response',

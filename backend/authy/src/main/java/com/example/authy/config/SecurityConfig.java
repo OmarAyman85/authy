@@ -40,6 +40,7 @@ public class SecurityConfig {
                                         "/oauth2/**",
                                         "/api/refresh-token",
                                         "/api/upload-profile-picture",
+                                        "/api/user/me",
                                         "/uploads/**",
                                         "/api/verify-code",
                                         "/swagger-ui/**",

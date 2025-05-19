@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-mfa-setup',
@@ -15,7 +16,11 @@ export class MfaSetupComponent {
   code: string = '';
   errorMessage: string = '';
 
-  constructor(private router: Router, private http: HttpClient) {
+  constructor(
+    private router: Router,
+    private http: HttpClient,
+    private authService: AuthService
+  ) {
     const navigation = this.router.getCurrentNavigation();
     this.secretImageUri = navigation?.extras?.state?.['secretImageUri'] || null;
     this.userName = navigation?.extras?.state?.['userName'] || '';
@@ -31,7 +36,7 @@ export class MfaSetupComponent {
         next: (response) => {
           const token = response.access_token;
           if (token) {
-            localStorage.setItem('jwtToken', token);
+            this.authService.setAccessToken(token);
             this.router.navigate(['/']);
           } else {
             this.errorMessage = 'Verification failed: No token received.';

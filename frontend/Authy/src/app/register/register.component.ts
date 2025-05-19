@@ -26,6 +26,7 @@ import {
   HttpResponse,
 } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -51,8 +52,11 @@ import { Router } from '@angular/router';
   styleUrl: './register.component.css',
 })
 export class RegisterComponent {
-  http = inject(HttpClient);
-  router = inject(Router);
+  constructor(
+    private router: Router,
+    private http: HttpClient,
+    private authService: AuthService
+  ) {}
 
   registerReq: FormGroup = new FormGroup(
     {
@@ -128,13 +132,16 @@ export class RegisterComponent {
 
   onSubmit(): void {
     this.http
-      .post('http://localhost:8081/api/register', this.registerReq.value, {
+      .post<any>('http://localhost:8081/api/register', this.registerReq.value, {
         observe: 'response',
       })
       .subscribe(
-        (response: HttpResponse<any>) => {
+        (response) => {
+          const token = response.body?.access_token;
+          if (token) {
+            this.authService.setAccessToken(token);
+          }
           if (response.status === 200 && response.body?.mfaEnabled) {
-            // Store MFA data and navigate to the MFA setup page
             const secretImageUri = response.body.secretImageUri;
             const userName = response.body.userName;
             this.router.navigate(['/mfa-setup'], {
